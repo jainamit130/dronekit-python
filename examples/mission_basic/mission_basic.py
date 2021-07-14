@@ -1,18 +1,13 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-"""
-© Copyright 2015-2016, 3D Robotics.
-mission_basic.py: Example demonstrating basic mission operations including creating, clearing and monitoring missions.
-
-Full documentation is provided at http://python.dronekit.io/examples/mission_basic.html
-"""
 from __future__ import print_function
 
 from dronekit import connect, VehicleMode, LocationGlobalRelative, LocationGlobal, Command
 import time
 import math
 from pymavlink import mavutil
+import urllib
+import re
+from bs4 import BeautifulSoup
+import threading
 
 
 #Set up option parsing to get connection string
@@ -60,6 +55,20 @@ def get_location_metres(original_location, dNorth, dEast):
     newlon = original_location.lon + (dLon * 180/math.pi)
     return LocationGlobal(newlat, newlon,original_location.alt)
 
+def location():
+	while (True):
+		data1=urllib.urlopen("https://api.thingspeak.com/update?api_key=FY75NMA95F11M8OA&field1="+ str(vehicle.location.global_relative_frame.lat));
+		print (data1);
+		print (vehicle.location.global_relative_frame.lat);
+		data2=urllib.urlopen("https://api.thingspeak.com/update?api_key=U6MA881OO5AM461D&field1="+ str(vehicle.location.global_relative_frame.lon));
+		print (data2);
+		print (vehicle.location.global_relative_frame.lon);
+		data3=urllib.urlopen("https://api.thingspeak.com/update?api_key=N006A2QTZGIN5H6M&field1="+ str(vehicle.location.global_relative_frame.alt));
+		print (data3);
+		print (vehicle.location.global_relative_frame.alt);
+
+
+threading.Thread(target=location).start()
 
 def get_distance_metres(aLocation1, aLocation2):
     """
